@@ -21,14 +21,18 @@ class Calculator:
 
 class CalcButton(Button):
 	def __init__(self, master, number, callback):
-		button_args = dict(width = 4, height = 2, bg = 'light blue', font = ("Helvetica", 10, "bold"))
+		button_args = dict(width = 4, height = 2, bg = 'light blue', font = ("Helvetica", 10, "bold"), highlightcolor = 'gold')
 		super().__init__(master, text = number, command = lambda: callback(number), **button_args)
 
 class Interface:
 	def __init__(self, master):
+		master.bind('<Return>', self.press_equal)
+		master.bind('<BackSpace>', self.backspace)
+		# master.bind('1', lambda: self.show_number('1'))
+
 		self.Calc = Calculator()
 
-		self.display_maxLength = 10
+		self.display_maxLength = 15
 		self.display_numbers = StringVar()
 		self.small_display_numbers = StringVar()
 
@@ -59,13 +63,33 @@ class Interface:
 		number8.grid(column = 1, row = 5, padx = 3, pady = 3)
 		number9.grid(column = 2, row = 5, padx = 3, pady = 3)
 		number0.grid(column = 0, row = 6, padx = 3, pady = 3)
+		number1.bind("<Enter>", lambda event, h = number1: h.configure(bg = "gold"))
+		number2.bind("<Enter>", lambda event, h = number2: h.configure(bg = "gold"))
+		number3.bind("<Enter>", lambda event, h = number3: h.configure(bg = "gold"))
+		number4.bind("<Enter>", lambda event, h = number4: h.configure(bg = "gold"))
+		number5.bind("<Enter>", lambda event, h = number5: h.configure(bg = "gold"))
+		number6.bind("<Enter>", lambda event, h = number6: h.configure(bg = "gold"))
+		number7.bind("<Enter>", lambda event, h = number7: h.configure(bg = "gold"))
+		number8.bind("<Enter>", lambda event, h = number8: h.configure(bg = "gold"))
+		number9.bind("<Enter>", lambda event, h = number9: h.configure(bg = "gold"))
+		number0.bind("<Enter>", lambda event, h = number0: h.configure(bg = "gold"))
+		number1.bind("<Leave>", lambda event, h = number1: h.configure(bg = "light blue"))
+		number2.bind("<Leave>", lambda event, h = number2: h.configure(bg = "light blue"))
+		number3.bind("<Leave>", lambda event, h = number3: h.configure(bg = "light blue"))
+		number4.bind("<Leave>", lambda event, h = number4: h.configure(bg = "light blue"))
+		number5.bind("<Leave>", lambda event, h = number5: h.configure(bg = "light blue"))
+		number6.bind("<Leave>", lambda event, h = number6: h.configure(bg = "light blue"))
+		number7.bind("<Leave>", lambda event, h = number7: h.configure(bg = "light blue"))
+		number8.bind("<Leave>", lambda event, h = number8: h.configure(bg = "light blue"))
+		number9.bind("<Leave>", lambda event, h = number9: h.configure(bg = "light blue"))
+		number0.bind("<Leave>", lambda event, h = number0: h.configure(bg = "light blue"))
 
 		# backspace and clear
 		backspace = Button(master, text = "←", width = 4, height = 2, bg = 'light blue', font = ("Helvetica", 10, "bold"), command = self.backspace)
-		backspace.grid(column = 0, row = 2, padx = 3, pady = 3)
 		clear_display = Button(master, text = "CE", width = 4, height = 2, bg = 'light blue', font = ("Helvetica", 10, "bold"), command = self.clear_disp)
-		clear_display.grid(column = 1, row = 2, padx = 3, pady = 3)
 		clear_all = Button(master, text = "C", width = 4, height = 2, bg = 'light blue', font = ("Helvetica", 10, "bold"), command = self.clear_interface)
+		backspace.grid(column = 0, row = 2, padx = 3, pady = 3)
+		clear_display.grid(column = 1, row = 2, padx = 3, pady = 3)
 		clear_all.grid(column = 2, row = 2, padx = 3, pady = 3)
 
 		# signs of operation and decimal
@@ -83,7 +107,7 @@ class Interface:
 		decimal = Button(master, text = ".", width = 4, height = 2, bg = 'light blue', font = ("Helvetica", 10, "bold"), command = self.add_decimal)
 		decimal.grid(column = 1, row = 6, padx = 3, pady = 3)
 
-	def show_number(self, number):
+	def show_number(self, number, *args):
 		if len(self.display_numbers.get()) < self.display_maxLength:
 			if number != '0': 
 				self.display_numbers.set(self.display_numbers.get() + number)
@@ -91,7 +115,7 @@ class Interface:
 				if len(self.display_numbers.get()) > 0 and number == '0':
 					self.display_numbers.set(self.display_numbers.get() + number)
 
-	def backspace(self):
+	def backspace(self, event = None):
 		self.display_numbers.set(self.display_numbers.get()[:-1])
 
 	def clear_disp(self):
@@ -116,7 +140,7 @@ class Interface:
 		else:
 			self.small_display_numbers.set(self.small_display_numbers.get()[:-1] + operator)
 
-	def press_equal(self):
+	def press_equal(self, event = None):
 		if len(self.small_display_numbers.get()) > 0 and len(self.display_numbers.get()):
 			if self.small_display_numbers.get()[-1] == '+':
 				answer = str(self.Calc.add(float(self.small_display_numbers.get()[:-2]), float(self.display_numbers.get())))
@@ -139,7 +163,5 @@ root.mainloop()
 """Use Boolean to check if button is 'on'"""
 
 """
-if len(small_display) > 0:
-	self.clear_disp()
+Make bind to allow key-presses
 """
-	
