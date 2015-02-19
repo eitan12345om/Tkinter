@@ -1,5 +1,4 @@
 from tkinter import *
-import random
 
 root = Tk()
 root.title('Button Clicker')
@@ -16,6 +15,7 @@ def add_click():
 		counter_string.set("You've clicked the button %d time" % counter.get())
 	else:
 		counter_string.set("You've clicked the button %d times" % counter.get())
+	print(counter.get())
 def reset_clicks():
 	counter.set(0)
 	counter_string.set("You've clicked the button %d times" % counter.get())
