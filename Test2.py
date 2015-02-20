@@ -1,5 +1,7 @@
 import random
+import time
 from tkinter import *
+
 
 root = Tk()
 root.title('Turn Game')
@@ -16,7 +18,6 @@ class Player:
 		if self.poisonous:
 			attack += 5
 		other.health = max(0, other.health - attack)
-		print(other.health, attack)
 
 	def _healing(self, heal):
 		self.health = min(200, self.health + heal)
@@ -29,7 +30,7 @@ class Player:
 		attack = random.randrange(10, 36)
 		self._attacking(attack, other)
 		recoil = random.randrange(0, 6)
-		self._attacking(recoil, self)
+		self.health = max(0, self.health - recoil)
 
 	def heal(self):
 		heal = random.randrange(18, 26)
@@ -40,7 +41,8 @@ class Player:
 		if choice == 0:
 			other.health = (other.health + 1) // 2
 		else:
-			self.health -= 25
+			self.health = max(0, self.health - 25)
+
 
 class Interface:
 
@@ -56,8 +58,6 @@ class Interface:
 		hel_descrip = "Heal (18-25) lifepoints: uses a healing elixir"
 		pos_descrip = "Adds an extra 5 damage. Can be used once"
 		sum_descrip = "Half Computer's health or minus 25 of own"
-
-
 
 
 		self.display_variable = StringVar()
@@ -101,6 +101,8 @@ class Interface:
 		self.summon_counter += 1
 		if self.summon_counter == 3:
 			self.summon_gods.config(state = ACTIVE)
+		if self.Computer.health > 0:
+			self.computer_logic()
 
 	def click_heavy(self):
 		self.Human.heavy(self.Computer)
@@ -108,6 +110,8 @@ class Interface:
 		self.update_heal()
 		self.summon_counter = 0
 		self.summon_gods.config(state = DISABLED)
+		if self.Computer.health > 0:
+			self.computer_logic()
 
 	def click_heal(self):
 		self.Human.heal()
@@ -115,6 +119,8 @@ class Interface:
 		self.update_heal()
 		self.summon_counter = 0
 		self.summon_gods.config(state = DISABLED)
+		if self.Computer.health > 0:
+			self.computer_logic()
 
 	def click_poison(self):
 		self.Human.poisonous = True
@@ -123,6 +129,8 @@ class Interface:
 		self.heavy_attack.config(fg = 'green')
 		self.summon_counter = 0
 		self.summon_gods.config(state = DISABLED)
+		if self.Computer.health > 0:
+			self.computer_logic()
 
 	def click_summon(self):
 		self.Human.summon_gods(self.Computer)
@@ -130,6 +138,8 @@ class Interface:
 		self.update_heal()
 		self.summon_counter = 0
 		self.summon_gods.config(state = DISABLED)
+		if self.Computer.health > 0:
+			self.computer_logic()
 
 	def update_health(self):
 		neutral_descrip = "Your Health: %s      Computer Health: %s" % (self.Human.health, self.Computer.health)
@@ -140,6 +150,22 @@ class Interface:
 			self.heal_self.config(state = ACTIVE)
 		else:
 			self.heal_self.config(state = DISABLED)
+
+	def computer_logic(self):
+		moves = [lambda: self.Computer.moderate(self.Human), self.Computer.heal]
+		moves2 = [lambda: self.Computer.moderate(self.Human), self.Computer.heal, self.Computer.heal, self.Computer.heal, self.Computer.heal]
+
+		if self.Computer.health > 60 or self.Human.health < 30:
+			self.Computer.moderate(self.Human)
+		elif self.Computer.health < 25:
+			self.Computer.heal()
+		elif self.Computer.health < 30:
+			random.choice(moves2)
+		else:
+			random.choice(moves)
+
+		self.update_health()
+		self.update_heal()
 
 GUI = Interface(root)
 root.mainloop()
